@@ -1,2 +1,2 @@
 # craftos-shit
-We make CraftOS programs
+**We** make CraftOS programs

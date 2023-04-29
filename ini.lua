@@ -1,12 +1,27 @@
 
 local ini = {}
 
+local mt = {
+  ["__index"] = function(self, idx)
+    if type(idx) == "string" then
+      idx = idx:lower()
+    end
+    return rawget(self, idx)
+  end,
+  ["__newindex"] = function(self, idx, val)
+    if type(idx) == "string" then
+      idx = idx:lower()
+    end
+    rawset(self, idx:lower(), val)
+  end
+}
+
 local function parseValue(raw)
   return tonumber(raw) or raw:sub(2, -2)
 end
 
 function ini.decode(data)
-  local out = {}
+  local out = setmetatable({}, mt)
   local currentSection = nil
 
   -- Loop over all the lines in the file.
@@ -24,7 +39,7 @@ function ini.decode(data)
         -- Allow global values.
         if currentSection then
           -- I wish there was a better way.
-          out[currentSection] = out[currentSection] or {}
+          out[currentSection] = out[currentSection] or setmetatable({}, mt)
           out[currentSection][key] = parseValue(value)
         else
           out[key] = parseValue(value)
